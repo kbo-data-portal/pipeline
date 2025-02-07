@@ -1,46 +1,45 @@
 import sys
 import os
-from datetime import datetime
+from datetime import datetime, timedelta
 
 sys.path.insert(0, os.path.abspath("/opt/airflow"))
 sys.path.insert(0, os.path.abspath("/opt/airflow/collector"))
 
 from airflow import DAG
-from airflow.models import Variable
 from airflow.operators.python import PythonOperator
-from airflow.providers.google.cloud.hooks.gcs import GCSHook
-from collector.scrapers import game_scraper
+from airflow.exceptions import AirflowFailException, AirflowSkipException
 
-OUTPUT_DIR = Variable.get("output_dir", default_var="/opt/airflow/collector/output")
-SCHEDULE_FILE = Variable.get("schedules_filename", default_var="game_schedules.parquet")
-DETAIL_FILE = Variable.get("game_detail_filename", default_var="game_details.parquet")
-HITTER_FILE = Variable.get("game_stat_hitter_filename", default_var="batting_stats_game.parquet")
-PITCHER_FILE = Variable.get("game_stat_pitcher_filename", default_var="pitching_stats_game.parquet")
+from plugins.storage import upload_to_gcs
 
-def upload_to_gcs(bucket_dir, filename, **kwargs):
-    """
-    Uploads the KBO data to Google Cloud Storage (GCS).
-    """
-    bucket_name = "kbo-data"
-    execution_date = kwargs['execution_date']
+from collector.config import OUTPUT_DIR, FILENAMES
+from collector.config import Scraper, Game, Player
+from collector.scrapers import game_scraper, schedule_scraper
 
-    hook = GCSHook(gcp_conn_id="google_cloud_default")
+PROJECT_NAME = "kob-data-project"
+BUCKET_NAME = "kbo-data"
+BUCKET_DIR = "games/daily"
+BUCKET_PLAYER_DIR = "players/daily"
 
-    file_path = os.path.join(OUTPUT_DIR, execution_date.strftime("%Y-%m-%d"), filename)
-    gcs_path = os.path.join(bucket_dir, execution_date.strftime("%Y/%m/%d"), filename)
-
-    hook.upload(bucket_name=bucket_name, object_name=gcs_path, filename=file_path)
+SCHEDULE_FILE = f"{FILENAMES[Scraper.GAME][Game.DETAIL]}.parquet"
+DETAIL_FILE = f"{FILENAMES[Scraper.GAME][Game.DETAIL]}.parquet"
+HITTER_FILE = f"{FILENAMES[Scraper.GAME][Game.STAT][Player.HITTER]}.parquet"
+PITCHER_FILE = f"{FILENAMES[Scraper.GAME][Game.STAT][Player.PITCHER]}.parquet"
 
 def run_scraper(**kwargs):
     """
     Runs the KBO scraper and checks if the task completes successfully.
     """
     execution_date = kwargs['execution_date']
-    file_path = os.path.join(OUTPUT_DIR, execution_date.strftime("%Y-%m-%d"), SCHEDULE_FILE)
-    
-    is_running = game_scraper.run(file_path)
-    if not is_running:
-        raise Exception("Scraper condition is False, failing the task!")
+    execution_date = datetime(2011,10,31)
+
+    if schedule_scraper.run(execution_date, execution_date):
+        file_path = os.path.join(OUTPUT_DIR, SCHEDULE_FILE)
+        
+        is_running = game_scraper.run(file_path)
+        if not is_running:
+            raise AirflowFailException("Scraper condition is False, failing the task!")
+    else:
+        raise AirflowSkipException("No games scheduled today.")
 
 with DAG(
     dag_id="fetch_kbo_games_daily",
@@ -48,7 +47,7 @@ with DAG(
     schedule_interval="@daily",
     start_date=datetime(1982, 4, 10),
     catchup=False,
-    tags=["kbo", "game", "etl", "gcs", "daily"],
+    tags=["kbo", "game", "hitter", "pitcher", "etl", "gcs", "daily"],
 ) as dag:
 
     run_scraper_task = PythonOperator(
@@ -60,7 +59,7 @@ with DAG(
     upload_game_details_task = PythonOperator(
         task_id="upload_game_details_to_gcs",
         python_callable=upload_to_gcs,
-        op_args=["games/daily", DETAIL_FILE],
+        op_args=[BUCKET_NAME, BUCKET_DIR, OUTPUT_DIR, DETAIL_FILE],
         trigger_rule='all_success',
         dag=dag
     )
@@ -68,15 +67,16 @@ with DAG(
     upload_hitter_stats_task = PythonOperator(
         task_id="upload_hitter_stats_to_gcs",
         python_callable=upload_to_gcs,
-        op_args=["players/daily", HITTER_FILE],
+        op_args=[BUCKET_NAME, BUCKET_PLAYER_DIR, OUTPUT_DIR, HITTER_FILE],
         trigger_rule='all_success',
         dag=dag
     )
 
+
     upload_pitcher_stats_task = PythonOperator(
         task_id="upload_pitcher_stats_to_gcs",
         python_callable=upload_to_gcs,
-        op_args=["players/daily", PITCHER_FILE],
+        op_args=[BUCKET_NAME, BUCKET_PLAYER_DIR, OUTPUT_DIR, PITCHER_FILE],
         trigger_rule='all_success',
         dag=dag
     )
