@@ -72,15 +72,6 @@ x-airflow-common:
     # The following line can be used to set a custom config file, stored in the local config folder
     # If you want to use it, outcomment it and replace airflow.cfg with the name of your config file
     # AIRFLOW_CONFIG: '/opt/airflow/config/airflow.cfg'
-    AIRFLOW_VAR_OUTPUT_DIR: /opt/airflow/collector/output
-    AIRFLOW_VAR_GAME_DETAIL_FILENAME: game_details.parquet
-    AIRFLOW_VAR_GAME_STAT_HITTER_FILENAME: batting_stats_game.parquet
-    AIRFLOW_VAR_GAME_STAT_PITCHER_FILENAME: pitching_stats_game.parquet
-    AIRFLOW_VAR_PLAYER_HITTER_FILENAME: batting_stats_player.parquet
-    AIRFLOW_VAR_PLAYER_PITCHER_FILENAME: pitching_stats_player.parquet
-    AIRFLOW_VAR_PLAYER_FIELDER_FILENAME: fielding_stats_player.parquet
-    AIRFLOW_VAR_PLAYER_RUNNER_FILENAME: running_stats_player.parquet
-    AIRFLOW_VAR_SCHEDULE_FILENAME: game_schedules.parquet
     AIRFLOW_CONN_GOOGLE_CLOUD_DEFAULT: google-cloud-platform://?key_path=/opt/airflow/config/key.json&scope=https://www.googleapis.com/auth/cloud-platform&num_retries=5
   volumes:
     - ${AIRFLOW_PROJ_DIR:-.}/config:/opt/airflow/config
