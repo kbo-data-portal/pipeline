@@ -29,7 +29,7 @@ def run_scraper(**kwargs):
     Runs the KBO scraper and checks if the task completes successfully.
     """
     execution_date = kwargs['execution_date']
-    season = execution_date.year - 1
+    season = execution_date.year
 
     for player_type in Player:
         is_running = player_scraper.run(player_type.value, season)

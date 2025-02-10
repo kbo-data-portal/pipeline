@@ -30,7 +30,6 @@ def run_scraper(**kwargs):
     Runs the KBO scraper and checks if the task completes successfully.
     """
     execution_date = kwargs['execution_date']
-    execution_date = datetime(2011,10,31)
 
     if schedule_scraper.run(execution_date, execution_date):
         file_path = os.path.join(OUTPUT_DIR, SCHEDULE_FILE)

@@ -26,7 +26,6 @@ def run_scraper(**kwargs):
     Runs the KBO scraper and checks if the task completes successfully.
     """
     execution_date = kwargs['execution_date']
-    execution_date = datetime(2011,10,24)
     start_date = execution_date + timedelta(days=1)
     end_date = execution_date + timedelta(days=7)
 
