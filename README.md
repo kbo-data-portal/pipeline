@@ -31,6 +31,7 @@ The following DAGs are currently implemented:
 - **fetch_kbo_games_daily** - Runs daily at **00:00**, parsing the latest KBO game results.
 - **fetch_kbo_players_weekly** - Runs every **Sunday at 00:00**, parsing player records up to the current week.
 - **fetch_kbo_schedules_weekly** - Runs every **Sunday at 00:00**, parsing the schedule for the upcoming week.
+- **fetch_kbo_historical_data** - Runs every **year on January 1st at 00:00**, parsing the schedule for the upcoming year.
 
 ## Data Storage Structure
 The collected data is stored in **Google Cloud Storage (GCS)** under the `kbo-data` bucket with the following structure:
