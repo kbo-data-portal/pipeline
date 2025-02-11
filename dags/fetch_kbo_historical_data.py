@@ -29,8 +29,8 @@ SCHEDULE_FILE = f"{FILENAMES[Scraper.SCHEDULE]}.parquet"
 
 PLAYER_HITTER_FILE = f"{FILENAMES[Scraper.PLAYER][Player.HITTER]}.parquet"
 PLAYER_PITCHER_FILE = f"{FILENAMES[Scraper.PLAYER][Player.PITCHER]}.parquet"
-#PLAYER_FIELDER_FILE = f"{FILENAMES[Scraper.PLAYER][Player.FIELDER]}.parquet"
-#PLAYER_RUNNER_FILE = f"{FILENAMES[Scraper.PLAYER][Player.RUNNER]}.parquet"
+PLAYER_FIELDER_FILE = f"{FILENAMES[Scraper.PLAYER][Player.FIELDER]}.parquet"
+PLAYER_RUNNER_FILE = f"{FILENAMES[Scraper.PLAYER][Player.RUNNER]}.parquet"
 
 def run_player_scraper(**kwargs):
     """
@@ -41,6 +41,9 @@ def run_player_scraper(**kwargs):
     target_season = execution_date.year
 
     for player_type in Player:
+        if player_type == Player.FIELDER or player_type == Player.RUNNER:
+            if target_season < 2001:
+                continue
         is_running = player_scraper.run(player_type.value, target_season)
         if not is_running:
             raise AirflowFailException(f"Player scraper failed for season {target_season} and player type {player_type.value}. Failing the task!")
@@ -155,8 +158,26 @@ with DAG(
         dag=dag
     )
 
+    upload_player_fielder_stats_task = PythonOperator(
+        task_id="upload_player_fielder_stats_to_gcs",
+        python_callable=upload_to_historical_gcs,
+        op_args=[BUCKET_NAME, PLAYER_BUCKET_DIR, OUTPUT_DIR, PLAYER_FIELDER_FILE],
+        trigger_rule='all_success',
+        dag=dag
+    )
+
+    upload_player_runner_stats_task = PythonOperator(
+        task_id="upload_player_runner_stats_to_gcs",
+        python_callable=upload_to_historical_gcs,
+        op_args=[BUCKET_NAME, PLAYER_BUCKET_DIR, OUTPUT_DIR, PLAYER_RUNNER_FILE],
+        trigger_rule='all_success',
+        dag=dag
+    )
+
     run_schedule_scraper_task >> upload_schedules_task >> run_game_scraper_task >> [upload_game_details_task, 
                                                                                     upload_game_hitter_stats_task, 
                                                                                     upload_game_pitcher_stats_task]
     run_player_scraper_task >> [upload_player_hitter_stats_task, 
-                                upload_player_pitcher_stats_task]
+                                upload_player_pitcher_stats_task,
+                                upload_player_fielder_stats_task,
+                                upload_player_runner_stats_task]

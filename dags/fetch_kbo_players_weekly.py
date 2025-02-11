@@ -21,8 +21,8 @@ BUCKET_DIR = "players/weekly"
 
 HITTER_FILE = f"{FILENAMES[Scraper.PLAYER][Player.HITTER]}.parquet"
 PITCHER_FILE = f"{FILENAMES[Scraper.PLAYER][Player.PITCHER]}.parquet"
-#FIELDER_FILE = f"{FILENAMES[Scraper.PLAYER][Player.FIELDER]}.parquet"
-#RUNNER_FILE = f"{FILENAMES[Scraper.PLAYER][Player.RUNNER]}.parquet"
+FIELDER_FILE = f"{FILENAMES[Scraper.PLAYER][Player.FIELDER]}.parquet"
+RUNNER_FILE = f"{FILENAMES[Scraper.PLAYER][Player.RUNNER]}.parquet"
 
 def run_scraper(**kwargs):
     """
@@ -67,4 +67,21 @@ with DAG(
         dag=dag
     )
 
-    run_scraper_task >> [upload_hitter_stats_task, upload_pitcher_stats_task]
+    upload_fielder_stats_task = PythonOperator(
+        task_id="upload_fielder_stats_to_gcs",
+        python_callable=upload_to_gcs,
+        op_args=[BUCKET_NAME, BUCKET_DIR, OUTPUT_DIR, FIELDER_FILE],
+        trigger_rule='all_success',
+        dag=dag
+    )
+
+    upload_runner_stats_task = PythonOperator(
+        task_id="upload_runner_stats_to_gcs",
+        python_callable=upload_to_gcs,
+        op_args=[BUCKET_NAME, BUCKET_DIR, OUTPUT_DIR, RUNNER_FILE],
+        trigger_rule='all_success',
+        dag=dag
+    )
+
+    run_scraper_task >> [upload_hitter_stats_task, upload_pitcher_stats_task,
+                         upload_fielder_stats_task, upload_runner_stats_task]
