@@ -28,7 +28,6 @@ def upload_to_historical_gcs(bucket_name, bucket_dir, output_dir, filename, **kw
     """
     execution_date = kwargs['execution_date']
     targer_season = str(execution_date.year)
-    targer_season = str(2024)
 
     file_path = os.path.join(output_dir, f"{targer_season}_{filename}")
     gcs_path = os.path.join(bucket_dir, targer_season, filename)
