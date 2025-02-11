@@ -23,7 +23,9 @@ To run the pipeline locally using Docker Compose:
    ```bash
    docker-compose up -d
    ```
-
+4. Access the Airflow web UI at [http://localhost:8080](http://localhost:8080)  
+   - Login with **Username:** `admin`, **Password:** `admin`
+   
 ## DAGs Overview
 
 The following DAGs are currently implemented:
