@@ -15,7 +15,7 @@ from collector.config import OUTPUT_DIR, FILENAMES
 from collector.config import Scraper, Player
 from collector.scrapers import player_scraper
 
-PROJECT_NAME = "kob-data-project"
+PROJECT_NAME = "kbo-data-project"
 BUCKET_NAME = "kbo-data"
 BUCKET_DIR = "players/weekly"
 
