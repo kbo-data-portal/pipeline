@@ -20,7 +20,7 @@ BUCKET_NAME = "kbo-data"
 BUCKET_DIR = "games/daily"
 BUCKET_PLAYER_DIR = "players/daily"
 
-SCHEDULE_FILE = f"{FILENAMES[Scraper.GAME][Game.DETAIL]}.parquet"
+SCHEDULE_FILE = f"{FILENAMES[Scraper.SCHEDULE]}.parquet"
 DETAIL_FILE = f"{FILENAMES[Scraper.GAME][Game.DETAIL]}.parquet"
 HITTER_FILE = f"{FILENAMES[Scraper.GAME][Game.STAT][Player.HITTER]}.parquet"
 PITCHER_FILE = f"{FILENAMES[Scraper.GAME][Game.STAT][Player.PITCHER]}.parquet"
