@@ -5,8 +5,7 @@ from airflow.providers.google.cloud.hooks.gcs import GCSHook
 
 def upload_to_gcs_helper(bucket_name, file_path, gcs_path):
     """
-    Helper function to upload KBO data to Google Cloud Storage (GCS).
-    This function handles the common logic for both historical and regular data uploads.
+    Helper function to upload data to Google Cloud Storage (GCS).
     """
     hook = GCSHook(gcp_conn_id="google_cloud_default")
     df = pd.read_parquet(file_path)
@@ -24,7 +23,7 @@ def upload_to_gcs_helper(bucket_name, file_path, gcs_path):
 
 def upload_to_historical_gcs(bucket_name, bucket_dir, output_dir, filename, **kwargs):
     """
-    Uploads the historical KBO data to Google Cloud Storage (GCS).
+    Uploads the historical data to Google Cloud Storage (GCS).
     """
     execution_date = kwargs['execution_date']
     targer_season = str(execution_date.year)
@@ -36,7 +35,7 @@ def upload_to_historical_gcs(bucket_name, bucket_dir, output_dir, filename, **kw
 
 def upload_to_gcs(bucket_name, bucket_dir, output_dir, filename, **kwargs):
     """
-    Uploads the KBO data to Google Cloud Storage (GCS).
+    Uploads the data to Google Cloud Storage (GCS).
     """
     execution_date = kwargs['execution_date']
 
