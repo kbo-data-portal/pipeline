@@ -1,0 +1,12 @@
+version: 2
+
+sources:
+  - name: public
+    schema: public 
+    tables:
+      - name: game_schedule
+      - name: game_summary
+      - name: player_hitter_stats
+      - name: player_pitcher_stats
+      - name: player_fielder_stats
+      - name: player_runner_stats
