@@ -9,13 +9,33 @@ from airflow import DAG
 from airflow.operators.python import PythonOperator
 
 from collector.scrapers import game, player, schedule, team
+from plugins.database import upload_to_database
 
 PROJECT_NAME = "kbo-data-project"
 BUCKET_NAME = "kbo-data"
 BUCKET_DIR = "players/weekly"
 
 
+def load_data():
+    """
+    Load data from the specified bucket and directory.
+    """
+    upload_to_database("collector/output/game/*/*/summary.parquet", "game_summary", "public")
+    upload_to_database("collector/output/game/*/*/hitter.parquet", "game_hitter_summary", "public")
+    upload_to_database("collector/output/game/*/*/pitcher.parquet", "game_pitcher_summary", "public")
+
+    upload_to_database("collector/output/player/*/hitter.parquet", "player_hitter_stats", "public")
+    upload_to_database("collector/output/player/*/pitcher.parquet", "player_pitcher_stats", "public")
+    upload_to_database("collector/output/player/*/runner.parquet", "player_runner_stats", "public")
+    upload_to_database("collector/output/player/*/fielder.parquet", "player_fielder_stats", "public")
+
+    upload_to_database("collector/output/schedule/*.parquet", "game_schedule", "public")
+
+
 def run_season_scraper(**kwargs):
+    """
+    Run the season scraper to fetch data for the current season.
+    """
     execution_date = kwargs['execution_date']
     season = execution_date.year
 
@@ -24,6 +44,9 @@ def run_season_scraper(**kwargs):
 
 
 def run_date_scraper(**kwargs):
+    """
+    Run the date scraper to fetch data for the specified date.
+    """
     execution_date = kwargs['execution_date']
     date = execution_date.strftime("%Y%m%d")
 
@@ -32,7 +55,7 @@ def run_date_scraper(**kwargs):
 
 with DAG(
     dag_id="fetch_daily_data",
-    description="Fetches and uploads daily KBO data to GCS",
+    description="Fetches and uploads daily KBO data",
     schedule_interval="@daily",
     start_date=datetime(1982, 4, 10),
     catchup=False,
@@ -51,4 +74,10 @@ with DAG(
         dag=dag
     )
 
-    run_season_scraper_task >> run_date_scraper_task
+    load_data_task = PythonOperator(
+        task_id="load_data",
+        python_callable=load_data,
+        dag=dag
+    )
+
+    [run_season_scraper_task, run_date_scraper_task] >> load_data_task
