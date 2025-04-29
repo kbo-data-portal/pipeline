@@ -1,6 +1,15 @@
 analytics:
   outputs:
-    dev:
+    docker:
+      dbname: postgres
+      host: host.docker.internal
+      pass: postgres
+      port: 5432
+      schema: analytics
+      threads: 1
+      type: postgres
+      user: postgres
+    local:
       dbname: postgres
       host: localhost
       pass: postgres
@@ -9,5 +18,5 @@ analytics:
       threads: 1
       type: postgres
       user: postgres
-  target: dev
+  target: docker
   
