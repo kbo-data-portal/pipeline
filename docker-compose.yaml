@@ -237,8 +237,8 @@ services:
           echo "   https://airflow.apache.org/docs/apache-airflow/stable/howto/docker-compose/index.html#before-you-begin"
           echo
         fi
-        mkdir -p /sources/logs /sources/dags /sources/plugins /sources/collector /sources/analytics_dbt
-        chown -R "${AIRFLOW_UID}:0" /sources/{logs,dags,plugins,analytics_dbt,collector}
+        mkdir -p /sources/logs /sources/dags /sources/plugins /sources/collector /sources/analytics
+        chown -R "${AIRFLOW_UID}:0" /sources/{logs,dags,plugins,analytics,collector}
         exec /entrypoint airflow version
     # yamllint enable rule:line-length
     environment:
