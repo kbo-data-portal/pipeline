@@ -51,7 +51,7 @@ with DAG(
     schedule_interval="@yearly",
     start_date=datetime(1982, 4, 10),
     catchup=True,
-    tags=["kbo", "dbt", "elt", "etl", "gcs", "yearly"],
+    tags=["kbo", "baseball", "airflow", "python", "bash", "dbt", "gcs", "elt", "yearly"]
 ) as dag:
 
     run_scraper_task = PythonOperator(

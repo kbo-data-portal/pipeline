@@ -61,7 +61,7 @@ with DAG(
     schedule_interval="@daily",
     start_date=datetime(1982, 4, 10),
     catchup=False,
-    tags=["kbo", "etl", "gcs", "daily"],
+    tags=["kbo", "baseball", "airflow", "python", "bash", "dbt", "gcs", "elt", "daily"]
 ) as dag:
 
     run_season_scraper_task = PythonOperator(
