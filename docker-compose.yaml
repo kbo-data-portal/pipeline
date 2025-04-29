@@ -78,7 +78,7 @@ x-airflow-common:
     - ${AIRFLOW_PROJ_DIR:-.}/logs:/opt/airflow/logs
     - ${AIRFLOW_PROJ_DIR:-.}/dags:/opt/airflow/dags
     - ${AIRFLOW_PROJ_DIR:-.}/plugins:/opt/airflow/plugins
-    - ${AIRFLOW_PROJ_DIR:-.}/analytics_dbt:/opt/airflow/analytics_dbt
+    - ${AIRFLOW_PROJ_DIR:-.}/analytics:/opt/airflow/analytics
     - ${AIRFLOW_PROJ_DIR:-.}/collector:/opt/airflow/collector
   user: "${AIRFLOW_UID:-50000}:0"
   depends_on:
