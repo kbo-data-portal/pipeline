@@ -1,6 +1,8 @@
 [submodule "collector"]
 	path = collector
 	url = https://github.com/leewr9/kbo-data-collector
+  	branch = master
 [submodule "portal"]
 	path = portal
 	url = https://github.com/leewr9/kbo-data-portal.git
+  	branch = master
