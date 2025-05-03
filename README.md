@@ -23,8 +23,16 @@ To run the pipeline locally using Docker Compose
     - [http://localhost:8080/](http://localhost:8080/)
     - Login with **Username:** `admin`, **Password:** `admin`
 
-## Data Collection
-The parsing modules are managed through the [kbo-data-collector](https://github.com/leewr9/kbo-data-collector) repository, which is included as a **Git submodule** in this project.
+## Submodules
+This project uses Git submodules to manage external components
+
+- [`kbo-data-collector`](https://github.com/leewr9/kbo-data-collector): Handles data collection logic.
+- [`kbo-data-portal`](https://github.com/leewr9/kbo-data-portal): Flask-based web application for data visualization.
+
+- To initialize submodules after cloning this repository
+    ```bash
+    git submodule update --init --remote
+    ```
 
 ## License
 This project is licensed under the **MIT License**. See the [LICENSE](LICENSE) file for details.
