@@ -38,4 +38,7 @@ with hitter_stats as (
 	order by "SEASON_ID", "TEAM_NM"
 )
 
-select * from hitter_stats
+select 
+    *,
+    round("H" / "AB"::numeric, 3) as "AVG"
+ from hitter_stats

@@ -7,7 +7,6 @@ with pitcher_stats as (
         sum("L") as "L",
         sum("SV") as "SV",
         sum("HLD") as "HLD",
-        sum("WPCT") as "WPCT",
         sum("IP") as "IP",
         sum("H") as "H",
         sum("HR") as "HR",
@@ -55,4 +54,8 @@ with pitcher_stats as (
 	order by "SEASON_ID", "TEAM_NM"
 )
 
-select * from pitcher_stats
+select 
+    *,
+    round((("ER" * 9) / "IP")::numeric, 3) as "ERA", 
+    round(("W" / ("W" + "L"))::numeric, 3) as "WPCT"
+from pitcher_stats
