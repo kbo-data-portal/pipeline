@@ -23,8 +23,7 @@ class KBOOperatorFactory:
 
         self.run_dbt_model = BashOperator(
             task_id="run_dbt_model",
-            bash_command=f"cd {ANALYTICS_DIR}",
-            # bash_command=f"cd {ANALYTICS_DIR} &&" \
-            #              f"dbt run --project-dir {ANALYTICS_DIR} --profiles-dir {ANALYTICS_DIR}",
+            bash_command=f"cd {ANALYTICS_DIR} &&" \
+                         f"dbt run --project-dir {ANALYTICS_DIR} --profiles-dir {ANALYTICS_DIR}",
             dag=dag
         )
