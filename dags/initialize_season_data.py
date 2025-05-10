@@ -45,7 +45,7 @@ with DAG(
     description=f"Initializes data for the upcoming season, including schedules, and player data.",
     schedule_interval="@yearly",
     start_date=datetime(1982, 4, 10),
-    catchup=False,
+    catchup=True,
     tags=["kbo", "baseball", "airflow", "python", "dbt", "elt", "season-start"]
 ) as dag:
     

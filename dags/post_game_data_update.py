@@ -41,7 +41,7 @@ def run_scraping_and_saving(series, **kwargs):
 
 for id, series in SERIES.items():
     with DAG(
-        dag_id=f"post_game_data_update_{series.lower()}",
+        dag_id=f"{id}_post_game_data_update_{series.lower()}",
         description=f"Updates game results and processes player statistics for {series} after a game ends.",
         schedule_interval="@daily",
         start_date=datetime(1982, 4, 10),

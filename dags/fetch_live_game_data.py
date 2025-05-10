@@ -36,7 +36,7 @@ def run_scraping_and_saving(**kwargs):
 with DAG(
     dag_id="fetch_live_game_data",
     description="Fetches and processes live game data every 5 minutes.",
-    schedule_interval="@daily",
+    schedule_interval="0/5 * * * *",
     start_date=datetime(1982, 4, 10),
     catchup=False,
     tags=["kbo", "baseball", "airflow", "python", "dbt", "elt", "real-time"]
