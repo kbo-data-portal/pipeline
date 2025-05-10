@@ -2,17 +2,17 @@ with vs_summary as (
 	select 
         "SEASON_ID", 
         "TEAM_NM",
-        "OP_NM",
-		sum(case when "W_L" = '승' then 1 else 0 end) as "W_CN",
-		sum(case when "W_L" = '패' then 1 else 0 end) as "L_CN",
-		sum(case when "W_L" = '무' then 1 else 0 end) as "D_CN",
+        "OPP_NM",
+		sum(case when "R" > "OPP_R" then 1 else 0 end) as "W_CN",
+		sum(case when "R" < "OPP_R" then 1 else 0 end) as "L_CN",
+		sum(case when "R" = "OPP_R" then 1 else 0 end) as "D_CN",
 		sum("R") as "R",
 		sum("H") as "H",
 		sum("E") as "E",
 		sum("B") as "B"
-    from {{ ref('stg_game_summary') }}
+    from {{ ref('stg_game_result_vs') }}
     where "SR_ID" = 0
-    group by "SEASON_ID", "TEAM_NM", "OP_NM"
+    group by "SEASON_ID", "TEAM_NM", "OPP_NM"
 	order by "SEASON_ID", "TEAM_NM"
 )
 

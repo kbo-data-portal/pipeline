@@ -49,7 +49,7 @@ with pitcher_stats as (
         sum("OBP") as "OBP",
         sum("SLG") as "SLG",
         sum("OPS") as "OPS"
-    from {{ source('public', 'player_pitcher_stats') }}
+    from {{ source('player', 'pitcher_season_summary') }}
     group by "SEASON_ID", "TEAM_NM"
 	order by "SEASON_ID", "TEAM_NM"
 )

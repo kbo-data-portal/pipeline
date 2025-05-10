@@ -24,28 +24,28 @@ with game_dataset as (
         ftvs."W_RATE" as "HOME_W_RATE",
         aftvs."W_RATE" as "AWAY_W_RATE"
     from public.game_schedule gs 
-    left join analytics.fct_team_season_summary ftss 
+    left join {{ ref('fct_team_result_summary') }} ftss 
         on gs."SEASON_ID" = ftss."SEASON_ID" and gs."HOME_NM" = ftss."TEAM_NM" 
-    left join analytics.fct_team_season_summary aftss 
+    left join {{ ref('fct_team_result_summary') }} aftss 
         on gs."SEASON_ID" = aftss."SEASON_ID" and gs."AWAY_NM" = aftss."TEAM_NM" 
-    left join analytics.fct_team_pitcher_stats ftps 
+    left join {{ ref('fct_team_pitcher_stats') }} ftps 
         on gs."SEASON_ID" = ftps."SEASON_ID" and gs."HOME_NM" = ftps."TEAM_NM" 
-    left join analytics.fct_team_pitcher_stats aftps 
+    left join {{ ref('fct_team_pitcher_stats') }} aftps 
         on gs."SEASON_ID" = aftps."SEASON_ID" and gs."AWAY_NM" = aftps."TEAM_NM" 
-    left join analytics.fct_team_hitter_stats fths 
+    left join {{ ref('fct_team_hitter_stats') }} fths 
         on gs."SEASON_ID" = fths."SEASON_ID" and gs."HOME_NM" = fths."TEAM_NM" 
-    left join analytics.fct_team_hitter_stats afths 
+    left join {{ ref('fct_team_hitter_stats') }} afths 
         on gs."SEASON_ID" = afths."SEASON_ID" and gs."AWAY_NM" = afths."TEAM_NM" 
-    left join analytics.fct_team_recent_summary ftrs 
+    left join {{ ref('fct_team_recent_summary') }} ftrs 
         on gs."SEASON_ID" = ftrs."SEASON_ID" and gs."HOME_NM" = ftrs."TEAM_NM" 
-    left join analytics.fct_team_recent_summary aftrs 
+    left join {{ ref('fct_team_recent_summary') }} aftrs 
         on gs."SEASON_ID" = aftrs."SEASON_ID" and gs."AWAY_NM" = aftrs."TEAM_NM" 
-    left join analytics.fct_team_vs_summary ftvs
+    left join {{ ref('fct_team_vs_summary') }} ftvs
         on gs."SEASON_ID" = ftvs."SEASON_ID" 
-        and gs."HOME_NM" = ftvs."TEAM_NM" and gs."AWAY_NM" = ftvs."OP_NM" 
-    left join analytics.fct_team_vs_summary aftvs
+        and gs."HOME_NM" = ftvs."TEAM_NM" and gs."AWAY_NM" = ftvs."OPP_NM" 
+    left join {{ ref('fct_team_vs_summary') }} aftvs
         on gs."SEASON_ID" = aftvs."SEASON_ID" 
-        and gs."HOME_NM" = aftvs."OP_NM" and gs."AWAY_NM" = aftvs."TEAM_NM" 
+        and gs."HOME_NM" = aftvs."OPP_NM" and gs."AWAY_NM" = aftvs."TEAM_NM" 
 )
 
 select * from game_dataset

@@ -33,7 +33,7 @@ with hitter_stats as (
         sum("ISOP") as "ISOP",
         sum("XR") as "XR",
         sum("GPA") as "GPA" 
-    from {{ source('public', 'player_hitter_stats') }}
+    from {{ source('player', 'hitter_season_summary') }}
     group by "SEASON_ID", "TEAM_NM"
 	order by "SEASON_ID", "TEAM_NM"
 )
