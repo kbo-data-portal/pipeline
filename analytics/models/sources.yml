@@ -13,3 +13,7 @@ sources:
       - name: pitcher_season_summary
       - name: fielder_season_summary
       - name: runner_season_summary
+      - name: hitter_daily_stats
+      - name: pitcher_daily_stats
+      - name: hitter_situation_stats
+      - name: pitcher_situation_stats

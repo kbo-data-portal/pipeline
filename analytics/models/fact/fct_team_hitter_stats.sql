@@ -1,5 +1,7 @@
 with hitter_stats as (
-        select "SEASON_ID", "TEAM_NM", 
+    select 
+        "SEASON_ID", 
+        "TEAM_NM", 
         sum("G") as "G",
         sum("PA") as "PA",
         sum("AB") as "AB",
