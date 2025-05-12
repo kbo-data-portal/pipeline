@@ -1,9 +1,8 @@
 with hitter_stats as (
     select 
         "SEASON_ID", 
-        "G_DT",
+        to_date("G_DT"::text, 'YYYYMMDD') as "G_DT",
         "TEAM_NM", 
-        sum("G") as "G",
         sum("PA") as "PA",
         sum("AB") as "AB",
         sum("R") as "R",
@@ -18,7 +17,7 @@ with hitter_stats as (
         sum("HBP") as "HBP",
         sum("SO") as "SO",
         sum("GDP") as "GDP"
-    from {{ source('player', 'hitter_season_summary') }}
+    from {{ ref('stg_hitter_cum_stats') }}
     group by "SEASON_ID", "G_DT", "TEAM_NM"
 	order by "SEASON_ID", "G_DT", "TEAM_NM"
 )

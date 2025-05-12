@@ -1,4 +1,14 @@
-with game_dataset as (
+with current_hitter as (
+    select *
+    from {{ ref('fct_team_hitter_daily_stats') }}
+    where "G_DT" = (select max("G_DT") as "G_DT" from {{ ref('fct_team_hitter_daily_stats') }})
+),
+current_pitcher as (
+    select *
+    from {{ ref('fct_team_pitcher_daily_stats') }}
+    where "G_DT" = (select max("G_DT") as "G_DT" from {{ ref('fct_team_pitcher_daily_stats') }})
+),
+game_predict as (
     select 
         "schedule"."SEASON_ID", 
         to_date("schedule"."G_DT"::text, 'YYYYMMDD') as "G_DT",
@@ -60,23 +70,15 @@ with game_dataset as (
         "away_p"."ER" as "AWAY_ER",
         "away_p"."ERA" as "AWAY_ERA"
     from {{ source('game', 'schedule') }} as "schedule"
-    left join {{ ref('fct_team_hitter_daily_stats') }} as "home_h" 
-        on "schedule"."SEASON_ID" = "home_h"."SEASON_ID" 
-        and "schedule"."HOME_NM" = "home_h"."TEAM_NM" 
-        and to_date("schedule"."G_DT"::text, 'YYYYMMDD') = "home_h"."G_DT" 
-    left join {{ ref('fct_team_hitter_daily_stats') }} as "away_h"
-        on "schedule"."SEASON_ID" = "away_h"."SEASON_ID" 
-        and "schedule"."AWAY_NM" = "away_h"."TEAM_NM" 
-        and to_date("schedule"."G_DT"::text, 'YYYYMMDD') = "away_h"."G_DT" 
-    left join {{ ref('fct_team_pitcher_daily_stats') }} as "home_p" 
-        on "schedule"."SEASON_ID" = "home_p"."SEASON_ID" 
-        and "schedule"."HOME_NM" = "home_p"."TEAM_NM" 
-        and to_date("schedule"."G_DT"::text, 'YYYYMMDD') = "home_p"."G_DT" 
-    left join {{ ref('fct_team_pitcher_daily_stats') }} as "away_p"
-        on "schedule"."SEASON_ID" = "away_p"."SEASON_ID" 
-        and "schedule"."AWAY_NM" = "away_p"."TEAM_NM" 
-        and to_date("schedule"."G_DT"::text, 'YYYYMMDD') = "away_p"."G_DT" 
+    left join current_hitter as "home_h" 
+        on "schedule"."HOME_NM" = "home_h"."TEAM_NM" 
+    left join current_hitter as "away_h"
+        on "schedule"."AWAY_NM" = "away_h"."TEAM_NM" 
+    left join current_pitcher as "home_p" 
+        on "schedule"."HOME_NM" = "home_p"."TEAM_NM" 
+    left join current_pitcher as "away_p"
+        on "schedule"."AWAY_NM" = "away_p"."TEAM_NM" 
 )
 
-select * from game_dataset
-where "GAME_RESULT_CK" = 1
+select * from game_predict
+where "GAME_RESULT_CK" = 0

@@ -1,7 +1,7 @@
 with pitcher_stats as (
     select 
         "SEASON_ID", 
-        "G_DT",
+        to_date("G_DT"::text, 'YYYYMMDD') as "G_DT",
         "TEAM_NM",
         sum("TBF") as "TBF",
         sum("IP") as "IP",
@@ -12,13 +12,12 @@ with pitcher_stats as (
         sum("SO") as "SO",
         sum("R") as "R",
         sum("ER") as "ER"
-    from {{ source('player', 'pitcher_season_summary') }}
+    from {{ ref('stg_pitcher_cum_stats') }}
     group by "SEASON_ID", "G_DT", "TEAM_NM"
 	order by "SEASON_ID", "G_DT", "TEAM_NM"
 )
 
 select 
     *,
-    round((("ER" * 9) / "IP")::numeric, 3) as "ERA", 
-    round(("W" / ("W" + "L"))::numeric, 3) as "WPCT"
+    round((("ER" * 9) / "IP")::numeric, 3) as "ERA"
 from pitcher_stats
