@@ -7,9 +7,9 @@ from sklearn.preprocessing import LabelEncoder
 from plugins.database import select_data
 
 
-def load_game_data(table_name: str = "ml_game_dataset"):
+def load_game_data(table: str):
     """Load game data from the database and preprocess features and target."""
-    df = select_data(table_name, "analytics")
+    df = select_data(table, "analytics")
     df["HOME_WIN"] = (df["HOME_SCORE"] > df["AWAY_SCORE"]).astype(int)
 
     feature_template = [
