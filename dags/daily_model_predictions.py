@@ -24,7 +24,7 @@ def run_daily_model_pipeline(**kwargs):
     raw_df, X, y = load_game_data()
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=RANDOM_STATE)
 
-    model_path = os.path.join("output", "best_model.joblib")
+    model_path = os.path.join("output", "model", "best_model.joblib")
     if os.path.exists(model_path):
         model = joblib.load(model_path)
     else:
@@ -38,7 +38,9 @@ def run_daily_model_pipeline(**kwargs):
     predictions = model.predict(X)
     raw_df["HOME_WIN"] = predictions
 
-    data_path = os.path.join("output", "prediction.parquet")
+    data_path = os.path.join("output", "prediction", "match.parquet")
+    os.makedirs(os.path.dirname(data_path), exist_ok=True)
+    
     raw_df.to_parquet(data_path, engine="pyarrow", index=False)
 
 
@@ -51,8 +53,8 @@ with DAG(
     tags=["kbo", "baseball", "airflow", "python", "model", "training", "prediction", "daily"]
 ) as dag:
     
-    execute_dmodel_pipeline = PythonOperator(
-        task_id="execute_dmodel_pipeline",
+    execute_model_pipeline = PythonOperator(
+        task_id="execute_model_pipeline",
         python_callable=run_daily_model_pipeline
     )
 
@@ -62,4 +64,4 @@ with DAG(
         dag=dag
     )
 
-    execute_dmodel_pipeline >> insert_data_into_db
+    execute_model_pipeline >> insert_data_into_db

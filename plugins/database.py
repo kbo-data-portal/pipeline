@@ -38,7 +38,7 @@ def _insert_to_db(pathname: str, table: str, schema: str = "public"):
 
 def insert_prediction_data_to_db():
     """Insert game prediction data into the database."""
-    _insert_to_db("output/prediction.parquet", "prediction", "game")
+    _insert_to_db("output/prediction/*.parquet", "prediction", "game")
 
 
 def insert_game_data_to_db():
@@ -68,5 +68,5 @@ def insert_game_data_to_db():
 
 def select_data(table: str, schema: str = "public"):
     """Load data from the specified database table."""
-    return pd.read_sql(f"SELECT * FROM {schema}.{table};", create_engine("postgresql://postgres:postgres@localhost:5432/postgres"))
+    return pd.read_sql(f"SELECT * FROM {schema}.{table};", _get_engine())
         
