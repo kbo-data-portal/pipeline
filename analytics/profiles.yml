@@ -1,22 +1,22 @@
 analytics:
   outputs:
     docker:
-      dbname: postgres
-      host: host.docker.internal
-      pass: postgres
+      dbname: "{{ env_var('DB_NAME') }}"
+      user: "{{ env_var('DB_USER') }}"
+      host: "{{ env_var('DB_HOST') }}"
+      pass: "{{ env_var('DB_PASSWORD') }}"
+      schema: "{{ env_var('DB_SCHEMA') }}"
       port: 5432
-      schema: analytics
       threads: 1
       type: postgres
-      user: postgres
     local:
       dbname: postgres
-      host: localhost
+      user: postgres
+      host: localhost # host.docker.internal
       pass: postgres
-      port: 5432
       schema: analytics
+      port: 5432
       threads: 1
       type: postgres
-      user: postgres
   target: docker
   

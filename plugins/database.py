@@ -1,11 +1,22 @@
 import glob
 import pandas as pd
-from sqlalchemy import create_engine, text
+from sqlalchemy import engine, create_engine
+from airflow.models.connection import Connection
 
 
 def _get_engine():
     """Create and return the SQLAlchemy engine."""
-    return create_engine("postgresql://postgres:postgres@host.docker.internal:5432/postgres")
+    connection = Connection.get_connection_from_secrets("postgres_default")
+    url_object = engine.URL.create(
+        drivername="postgresql+psycopg2",
+        username=connection.login,
+        password=connection.password,
+        host=connection.host,
+        port=connection.port,
+        database=connection.schema
+    )
+    
+    return create_engine(url_object)
 
 def _insert_to_db(pathname: str, table: str, schema: str = "public"):
     """Insert data from files into the specified database table."""
@@ -20,6 +31,7 @@ def _insert_to_db(pathname: str, table: str, schema: str = "public"):
             return
         
         df = pd.concat(df_list, ignore_index=True)
+        df.columns
         df.to_sql(table, engine, schema=schema, if_exists="append", index=False)
         print(f"Inserted data into {schema}.{table} from {len(df_list)} parquet files.")
 
