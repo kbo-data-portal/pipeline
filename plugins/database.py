@@ -36,6 +36,11 @@ def _insert_to_db(pathname: str, table: str, schema: str = "public"):
         print(f"Inserted data into {schema}.{table} from {len(df_list)} parquet files.")
 
 
+def insert_prediction_data_to_db():
+    """Insert game prediction data into the database."""
+    _insert_to_db("output/prediction.parquet", "prediction", "game")
+
+
 def insert_game_data_to_db():
     """Insert various game and player data into the database."""
     _insert_to_db("output/processed/game/schedule/*/*.parquet", "schedule", "game")
@@ -59,4 +64,9 @@ def insert_game_data_to_db():
             table=f"{pt}_situation_stats", 
             schema="player"
         )
+
+
+def select_data(table: str, schema: str = "public"):
+    """Load data from the specified database table."""
+    return pd.read_sql(f"SELECT * FROM {schema}.{table};", create_engine("postgresql://postgres:postgres@localhost:5432/postgres"))
         
