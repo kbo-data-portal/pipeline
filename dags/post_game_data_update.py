@@ -50,7 +50,6 @@ for id, series in SERIES.items():
     ) as dag:
     
         factory = KBOOperatorFactory(dag=dag)
-        
 
         fetch_and_save_data = PythonOperator(
             task_id="fetch_and_save_data",

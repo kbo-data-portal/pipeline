@@ -1,4 +1,5 @@
 temp/
+output/
 *key.json
 
 # Byte-compiled / optimized / DLL files
