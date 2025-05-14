@@ -8,6 +8,7 @@ sys.path.insert(0, os.path.abspath("/opt/airflow/collector"))
 
 from airflow import DAG
 from airflow.operators.python import PythonOperator
+from airflow.exceptions import AirflowException
 
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
@@ -20,11 +21,13 @@ from plugins.database import insert_prediction_data_to_db
 RANDOM_STATE = 1982
 
 
-def run_daily_model_pipeline(**kwargs):
-    raw_df, X, y = load_game_data()
+def train_model_pipeline(**kwargs):
+    _, X, y = load_game_data("ml_game_dataset")
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=RANDOM_STATE)
 
     model_path = os.path.join("output", "model", "best_model.joblib")
+    os.makedirs(os.path.dirname(model_path), exist_ok=True)
+
     if os.path.exists(model_path):
         model = joblib.load(model_path)
     else:
@@ -35,12 +38,22 @@ def run_daily_model_pipeline(**kwargs):
     metrics["name"] = 'best_model'
     joblib.dump(train_model, model_path)
 
+
+def make_model_predictions(**kwargs):
+    raw_df, X, _ = load_game_data("ml_game_predict")
+
+    model_path = os.path.join("output", "model", "best_model.joblib")
+    if os.path.exists(model_path):
+        model = joblib.load(model_path)
+    else:
+        raise AirflowException("Model file not found")
+
     predictions = model.predict(X)
     raw_df["HOME_WIN"] = predictions
-
+    
     data_path = os.path.join("output", "prediction", "match.parquet")
     os.makedirs(os.path.dirname(data_path), exist_ok=True)
-    
+
     raw_df.to_parquet(data_path, engine="pyarrow", index=False)
 
 
@@ -53,9 +66,14 @@ with DAG(
     tags=["kbo", "baseball", "airflow", "python", "model", "training", "prediction", "daily"]
 ) as dag:
     
-    execute_model_pipeline = PythonOperator(
-        task_id="execute_model_pipeline",
-        python_callable=run_daily_model_pipeline
+    execute_model_training = PythonOperator(
+        task_id="execute_model_training",
+        python_callable=train_model_pipeline
+    )
+    
+    execute_model_prediction = PythonOperator(
+        task_id="execute_model_prediction",
+        python_callable=make_model_predictions
     )
 
     insert_data_into_db = PythonOperator(
@@ -64,4 +82,4 @@ with DAG(
         dag=dag
     )
 
-    execute_model_pipeline >> insert_data_into_db
+    execute_model_training >> execute_model_prediction >> insert_data_into_db
