@@ -49,7 +49,10 @@ def make_model_predictions(**kwargs):
         raise AirflowException("Model file not found")
 
     predictions = model.predict(X)
+    proba = model.predict_proba(X)
     raw_df["HOME_WIN"] = predictions
+    raw_df["HOME_WIN_PROB"] = proba[:, 1]
+    raw_df["AWAY_WIN_PROB"] = proba[:, 0]
     
     data_path = os.path.join("output", "prediction", "match.parquet")
     os.makedirs(os.path.dirname(data_path), exist_ok=True)
