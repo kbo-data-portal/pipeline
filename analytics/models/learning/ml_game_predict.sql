@@ -12,7 +12,12 @@ game_predict as (
     select 
         "schedule"."SEASON_ID", 
         to_date("schedule"."G_DT"::text, 'YYYYMMDD') as "G_DT",
+        "schedule"."G_ID",
+        "schedule"."G_DT_TXT",
+        "schedule"."G_TM",
+        "schedule"."S_NM",
         "schedule"."GAME_RESULT_CK",
+        "schedule"."HOME_ID",
         "schedule"."HOME_NM", 
         "schedule"."AWAY_NM", 
         "schedule"."B_SCORE_CN" as "HOME_SCORE",
