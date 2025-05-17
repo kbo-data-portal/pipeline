@@ -12,12 +12,29 @@ with pitcher_stats as (
         sum("SO") as "SO",
         sum("R") as "R",
         sum("ER") as "ER"
-    from {{ ref('stg_pitcher_cum_stats') }}
+    from {{ ref('stg_pitcher_daily_summary') }}
     group by "SEASON_ID", "G_DT", "TEAM_NM"
 	order by "SEASON_ID", "G_DT", "TEAM_NM"
+),
+cum_stats as (
+    select 
+        "SEASON_ID", 
+        "TEAM_NM",
+        "G_DT",
+        sum("TBF") over (partition by "SEASON_ID", "TEAM_NM" order by "G_DT" rows between unbounded preceding and current row) as "TBF",
+        sum("IP") over (partition by "SEASON_ID", "TEAM_NM" order by "G_DT" rows between unbounded preceding and current row) as "IP",
+        sum("H") over (partition by "SEASON_ID", "TEAM_NM" order by "G_DT" rows between unbounded preceding and current row) as "H",
+        sum("HR") over (partition by "SEASON_ID", "TEAM_NM" order by "G_DT" rows between unbounded preceding and current row) as "HR",
+        sum("BB") over (partition by "SEASON_ID", "TEAM_NM" order by "G_DT" rows between unbounded preceding and current row) as "BB",
+        sum("HBP") over (partition by "SEASON_ID", "TEAM_NM" order by "G_DT" rows between unbounded preceding and current row) as "HBP",
+        sum("SO") over (partition by "SEASON_ID", "TEAM_NM" order by "G_DT" rows between unbounded preceding and current row) as "SO",
+        sum("R") over (partition by "SEASON_ID", "TEAM_NM" order by "G_DT" rows between unbounded preceding and current row) as "R",
+        sum("ER") over (partition by "SEASON_ID", "TEAM_NM" order by "G_DT" rows between unbounded preceding and current row) as "ER"
+    from pitcher_stats
 )
 
 select 
     *,
-    round((("ER" * 9) / "IP")::numeric, 3) as "ERA"
-from pitcher_stats
+    round((("ER" * 9) / "IP")::numeric, 3) as "ERA",
+    round((("BB" + "H") / "IP")::numeric, 3) as "WHIP"
+from cum_stats
