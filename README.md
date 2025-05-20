@@ -15,11 +15,11 @@ To run the pipeline locally using Docker Compose
     ```
     Ensure that your GCP service account key is placed in the `config` folder and renamed to `key.json`
    
-3. **Start the Airflow services using Docker Compose**
+2. **Start the Airflow services using Docker Compose**
     ```bash
     docker-compose up -d
     ```
-4. **Access the Airflow web UI**
+3. **Access the Airflow web UI**
     - [http://localhost:8080/](http://localhost:8080/)
     - Login with **Username:** `admin`, **Password:** `admin`
 
