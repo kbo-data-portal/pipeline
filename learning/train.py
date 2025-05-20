@@ -24,7 +24,7 @@ def train_game_model(
 
     metrics = {
         "acc": accuracy_score(y_test, y_pred),
-        "auc": roc_auc_score(y_test, y_pred),
+        "auc": roc_auc_score(y_test, y_proba),
         "prec": precision_score(y_test, y_pred),
         "rec": recall_score(y_test, y_pred),
         "f1": f1_score(y_test, y_pred),
