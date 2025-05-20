@@ -1,18 +1,15 @@
 with recent_summary as (
 	select 
         "SEASON_ID", 
+        to_date("G_DT"::text, 'YYYY-MM-DD') as "G_DT",
         "TEAM_NM",
-		max(case when cast("IS_HOME" as boolean) then "H_W_CN" else "A_W_CN" end) as "W_CN",
-		max(case when cast("IS_HOME" as boolean) then "H_L_CN" else "A_L_CN" end) as "L_CN",
-		max(case when cast("IS_HOME" as boolean) then "H_D_CN" else "A_D_CN" end) as "D_CN",
-		sum("R") as "R",
-		sum("H") as "H",
-		sum("E") as "E",
-		sum("B") as "B"
-    from {{ ref('stg_game_recent_vs') }}
-    where "SR_ID" = 0
-    group by "SEASON_ID", "TEAM_NM"
-	order by "SEASON_ID", "TEAM_NM"
+		"OPP_NM",
+		sum(case when "R" > "OPP_R" then 1 else 0 end) over (partition by "TEAM_NM" order by "G_DT" rows between 4 preceding and current row) as "W_CN",
+		sum(case when "R" < "OPP_R" then 1 else 0 end) over (partition by "TEAM_NM" order by "G_DT" rows between 4 preceding and current row) as "L_CN",
+		sum(case when "R" = "OPP_R" then 1 else 0 end) over (partition by "TEAM_NM" order by "G_DT" rows between 4 preceding and current row) as "D_CN",
+		avg("R") over (partition by "TEAM_NM" order by "G_DT" rows between 4 preceding and current row) as "AVG",
+		avg("OPP_R") over (partition by "TEAM_NM" order by "G_DT" rows between 4 preceding and current row) as "OPP_AVG"
+    from {{ ref('stg_game_result_vs') }}
 )
 
 select 

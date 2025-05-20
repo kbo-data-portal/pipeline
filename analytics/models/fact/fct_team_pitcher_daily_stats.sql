@@ -21,6 +21,15 @@ cum_stats as (
         "SEASON_ID", 
         "TEAM_NM",
         "G_DT",
+        sum("TBF") over (partition by "SEASON_ID", "TEAM_NM" order by "G_DT" rows between 4 preceding and current row) as "REC_TBF",
+        sum("IP") over (partition by "SEASON_ID", "TEAM_NM" order by "G_DT" rows between 4 preceding and current row) as "REC_IP",
+        sum("H") over (partition by "SEASON_ID", "TEAM_NM" order by "G_DT" rows between 4 preceding and current row) as "REC_H",
+        sum("HR") over (partition by "SEASON_ID", "TEAM_NM" order by "G_DT" rows between 4 preceding and current row) as "REC_HR",
+        sum("BB") over (partition by "SEASON_ID", "TEAM_NM" order by "G_DT" rows between 4 preceding and current row) as "REC_BB",
+        sum("HBP") over (partition by "SEASON_ID", "TEAM_NM" order by "G_DT" rows between 4 preceding and current row) as "REC_HBP",
+        sum("SO") over (partition by "SEASON_ID", "TEAM_NM" order by "G_DT" rows between 4 preceding and current row) as "REC_SO",
+        sum("R") over (partition by "SEASON_ID", "TEAM_NM" order by "G_DT" rows between 4 preceding and current row) as "REC_R",
+        sum("ER") over (partition by "SEASON_ID", "TEAM_NM" order by "G_DT" rows between 4 preceding and current row) as "REC_ER",
         sum("TBF") over (partition by "SEASON_ID", "TEAM_NM" order by "G_DT" rows between unbounded preceding and current row) as "TBF",
         sum("IP") over (partition by "SEASON_ID", "TEAM_NM" order by "G_DT" rows between unbounded preceding and current row) as "IP",
         sum("H") over (partition by "SEASON_ID", "TEAM_NM" order by "G_DT" rows between unbounded preceding and current row) as "H",
@@ -35,6 +44,8 @@ cum_stats as (
 
 select 
     *,
+    round((("REC_ER" * 9) / "IP")::numeric, 3) as "REC_ERA",
+    round((("REC_BB" + "REC_H") / "IP")::numeric, 3) as "REC_WHIP",
     round((("ER" * 9) / "IP")::numeric, 3) as "ERA",
     round((("BB" + "H") / "IP")::numeric, 3) as "WHIP"
 from cum_stats

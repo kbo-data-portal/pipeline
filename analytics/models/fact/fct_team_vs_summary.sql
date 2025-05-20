@@ -9,7 +9,9 @@ with vs_summary as (
 		sum("R") as "R",
 		sum("H") as "H",
 		sum("E") as "E",
-		sum("B") as "B"
+		sum("B") as "B",
+		avg("R") as "AVG",
+		avg("OPP_R") as "OPP_AVG"
     from {{ ref('stg_game_result_vs') }}
     where "SR_ID" = 0
     group by "SEASON_ID", "TEAM_NM", "OPP_NM"

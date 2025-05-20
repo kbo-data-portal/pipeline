@@ -26,6 +26,20 @@ cum_stats as (
         "SEASON_ID", 
         "TEAM_NM",
         "G_DT",
+        sum("PA") over (partition by "SEASON_ID", "TEAM_NM" order by "G_DT" rows between 4 preceding and current row) as "REC_PA",
+        sum("AB") over (partition by "SEASON_ID", "TEAM_NM" order by "G_DT" rows between 4 preceding and current row) as "REC_AB",
+        sum("R") over (partition by "SEASON_ID", "TEAM_NM" order by "G_DT" rows between 4 preceding and current row) as "REC_R",
+        sum("H") over (partition by "SEASON_ID", "TEAM_NM" order by "G_DT" rows between 4 preceding and current row) as "REC_H",
+        sum("2B") over (partition by "SEASON_ID", "TEAM_NM" order by "G_DT" rows between 4 preceding and current row) as "REC_2B",
+        sum("3B") over (partition by "SEASON_ID", "TEAM_NM" order by "G_DT" rows between 4 preceding and current row) as "REC_3B",
+        sum("HR") over (partition by "SEASON_ID", "TEAM_NM" order by "G_DT" rows between 4 preceding and current row) as "REC_HR",
+        sum("RBI") over (partition by "SEASON_ID", "TEAM_NM" order by "G_DT" rows between 4 preceding and current row) as "REC_RBI",
+        sum("SB") over (partition by "SEASON_ID", "TEAM_NM" order by "G_DT" rows between 4 preceding and current row) as "REC_SB",
+        sum("CS") over (partition by "SEASON_ID", "TEAM_NM" order by "G_DT" rows between 4 preceding and current row) as "REC_CS",
+        sum("BB") over (partition by "SEASON_ID", "TEAM_NM" order by "G_DT" rows between 4 preceding and current row) as "REC_BB",
+        sum("HBP") over (partition by "SEASON_ID", "TEAM_NM" order by "G_DT" rows between 4 preceding and current row) as "REC_HBP",
+        sum("SO") over (partition by "SEASON_ID", "TEAM_NM" order by "G_DT" rows between 4 preceding and current row) as "REC_SO",
+        sum("GDP") over (partition by "SEASON_ID", "TEAM_NM" order by "G_DT" rows between 4 preceding and current row) as "REC_GDP",
         sum("PA") over (partition by "SEASON_ID", "TEAM_NM" order by "G_DT" rows between unbounded preceding and current row) as "PA",
         sum("AB") over (partition by "SEASON_ID", "TEAM_NM" order by "G_DT" rows between unbounded preceding and current row) as "AB",
         sum("R") over (partition by "SEASON_ID", "TEAM_NM" order by "G_DT" rows between unbounded preceding and current row) as "R",
@@ -45,5 +59,6 @@ cum_stats as (
 
 select 
     *,
+    round("REC_H" / "REC_AB"::numeric, 3) as "REC_AVG",
     round("H" / "AB"::numeric, 3) as "AVG"
  from cum_stats
