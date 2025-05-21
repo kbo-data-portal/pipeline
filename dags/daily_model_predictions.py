@@ -10,7 +10,7 @@ from airflow import DAG
 from airflow.operators.python import PythonOperator
 from airflow.exceptions import AirflowException
 
-from sklearn.linear_model import LogisticRegression
+from lightgbm import LGBMClassifier
 from sklearn.model_selection import train_test_split
 
 from learning.train import train_game_model
@@ -31,7 +31,7 @@ def train_model_pipeline(**kwargs):
     if os.path.exists(model_path):
         model = joblib.load(model_path)
     else:
-        model = LogisticRegression(max_iter=10000, solver="liblinear", random_state=RANDOM_STATE)
+        model = LGBMClassifier(random_state=RANDOM_STATE)
 
     train_model, metrics = train_game_model(model, X_train, X_test, y_train, y_test)
 
