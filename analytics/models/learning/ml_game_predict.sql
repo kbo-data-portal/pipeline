@@ -1,6 +1,6 @@
 with 
 current_recent as (
-    select *
+    select distinct on("TEAM_NM") *
     from {{ ref('fct_team_recent_summary') }}
     where "G_DT" = (select max("G_DT") as "G_DT" from {{ ref('fct_team_recent_summary') }})
 ),
