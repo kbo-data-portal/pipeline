@@ -56,4 +56,4 @@ with DAG(
         python_callable=run_scraping_and_saving
     )
 
-    fetch_and_save_data >> [factory.upload_to_cloud_storage, factory.insert_data_into_db] >> factory.run_dbt_model 
+    fetch_and_save_data >> factory.upload_to_cloud_storage >> factory.insert_data_into_db >> factory.run_dbt_model

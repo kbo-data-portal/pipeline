@@ -57,4 +57,4 @@ for id, series in SERIES.items():
             op_args=[id]
         )
 
-        fetch_and_save_data >> [factory.upload_to_cloud_storage, factory.insert_data_into_db] >> factory.run_dbt_model
+        fetch_and_save_data >> factory.upload_to_cloud_storage >> factory.insert_data_into_db >> factory.run_dbt_model
