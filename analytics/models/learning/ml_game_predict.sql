@@ -155,5 +155,9 @@ game_predict as (
         on "schedule"."AWAY_NM" = "away_p"."TEAM_NM" 
 )
 
-select * from game_predict
-where "GAME_RESULT_CK" = 0
+select 
+    *, 
+    case when "HOME_SCORE" > "AWAY_SCORE" then 1 
+         when "HOME_SCORE" < "AWAY_SCORE" then 0 
+         else null end as "RESULT"
+ from game_predict
