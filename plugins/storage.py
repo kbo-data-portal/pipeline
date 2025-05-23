@@ -18,16 +18,19 @@ def _upload_to_cloud_storage(bucket_name: str, pathname: str):
     print(f"Uploaded file into {bucket_name} from {len(file_list)} parquet files.")
 
 
-def upload_data_to_cloud_storage():
+def upload_data_to_cloud_storage(**kwargs):
     """Upload various game and player data to Google Cloud Storage."""
+    execution_date = kwargs['execution_date']
+    year = execution_date.year
+
     bucket_name = "kbo-data"
-    _upload_to_cloud_storage(bucket_name, "output/processed/game/schedule/*/*.parquet")
-    _upload_to_cloud_storage(bucket_name, "output/processed/game/result/*/*.parquet")
+    _upload_to_cloud_storage(bucket_name, f"output/processed/game/schedule/{year}/*.parquet")
+    _upload_to_cloud_storage(bucket_name, f"output/processed/game/result/{year}/*.parquet")
 
     for pt in ["hitter", "pitcher", "fielder", "runner"]:
-        _upload_to_cloud_storage(bucket_name, f"output/processed/player/*/{pt}/season_summary.parquet")
-        _upload_to_cloud_storage(bucket_name, f"output/processed/player/*/{pt}/*/daily.parquet")
-        _upload_to_cloud_storage(bucket_name, f"output/processed/player/*/{pt}/*/situation.parquet")
+        _upload_to_cloud_storage(bucket_name, f"output/processed/player/{year}/{pt}/season_summary.parquet")
+        _upload_to_cloud_storage(bucket_name, f"output/processed/player/{year}/{pt}/*/daily.parquet")
+        _upload_to_cloud_storage(bucket_name, f"output/processed/player/{year}/{pt}/*/situation.parquet")
 
 
 def get_list_from_cloud_storage(prefix: str, filename: str):
