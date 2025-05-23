@@ -1,9 +1,8 @@
 import glob
 from airflow.providers.google.cloud.hooks.gcs import GCSHook
-import gcsfs
 
 
-def _upload_to_cloud_storage(bucket_name, pathname):
+def _upload_to_cloud_storage(bucket_name: str, pathname: str):
     """Upload files to Google Cloud Storage if they do not already exist."""
     hook = GCSHook(gcp_conn_id="google_cloud_default")
 
@@ -14,7 +13,7 @@ def _upload_to_cloud_storage(bucket_name, pathname):
         
     for filename in file_list:
         object_name = filename.split("output/processed/")[1]
-        hook.upload(bucket_name=bucket_name, object_name=object_name, filename=filename)
+        # hook.upload(bucket_name=bucket_name, object_name=object_name, filename=filename)
 
     print(f"Uploaded file into {bucket_name} from {len(file_list)} parquet files.")
 
@@ -30,3 +29,12 @@ def upload_data_to_cloud_storage():
         _upload_to_cloud_storage(bucket_name, f"output/processed/player/*/{pt}/*/daily.parquet")
         _upload_to_cloud_storage(bucket_name, f"output/processed/player/*/{pt}/*/situation.parquet")
 
+
+def get_list_from_cloud_storage(prefix: str, filename: str):
+    """Get a list of files from Google Cloud Storage."""
+    hook = GCSHook(gcp_conn_id="google_cloud_default")
+
+    bucket_name = "kbo-data"
+    object_names = hook.list(bucket_name=bucket_name, prefix=prefix)
+    
+    return [f'gs://{bucket_name}/{obj}' for obj in object_names if obj.endswith(filename)]
