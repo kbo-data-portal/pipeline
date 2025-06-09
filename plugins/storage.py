@@ -1,4 +1,5 @@
 import glob
+from concurrent.futures import ThreadPoolExecutor
 from airflow.providers.google.cloud.hooks.gcs import GCSHook
 
 
@@ -10,10 +11,13 @@ def _upload_to_cloud_storage(bucket_name: str, pathname: str):
     if not file_list:
         print(f"No parquet files found for {pathname}. Skipping...")
         return
-        
-    for filename in file_list:
+
+    def upload_file(filename):
         object_name = filename.split("output/processed/")[1]
-        # hook.upload(bucket_name=bucket_name, object_name=object_name, filename=filename)
+        hook.upload(bucket_name=bucket_name, object_name=object_name, filename=filename)
+
+    with ThreadPoolExecutor(max_workers=24) as executor:
+        executor.map(upload_file, file_list)
 
     print(f"Uploaded file into {bucket_name} from {len(file_list)} parquet files.")
 
