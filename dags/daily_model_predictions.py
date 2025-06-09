@@ -63,7 +63,7 @@ def make_model_predictions(**kwargs):
 with DAG(
     dag_id="daily_model_predictions",
     description="Trains the model and performs game predictions daily using the latest data.",
-    schedule_interval=None,
+    schedule_interval=None, # Trigger for post_game_data_update
     start_date=datetime(1982, 4, 10),
     catchup=False,
     tags=["kbo", "baseball", "airflow", "python", "model", "training", "prediction", "daily"]

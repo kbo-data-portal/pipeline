@@ -7,6 +7,7 @@ sys.path.insert(0, os.path.abspath("/opt/airflow/collector"))
 
 from airflow import DAG
 from airflow.operators.python import PythonOperator
+from airflow.operators.trigger_dagrun import TriggerDagRunOperator
 
 from collector.scrapers import game, player
 from plugins.factory import KBOOperatorFactory
@@ -57,4 +58,12 @@ for id, series in SERIES.items():
             op_args=[id]
         )
 
-        fetch_and_save_data >> factory.upload_to_cloud_storage >> factory.insert_data_into_db >> factory.run_dbt_model
+        trigger_model_predictions = TriggerDagRunOperator(
+            task_id="trigger_model_predictions",
+            trigger_dag_id="daily_model_predictions",
+            wait_for_completion=True,
+            poke_interval=60,
+            deferrable=True
+        )
+
+        fetch_and_save_data >> factory.upload_to_cloud_storage >> factory.insert_data_into_db >> factory.run_dbt_model >> trigger_model_predictions
