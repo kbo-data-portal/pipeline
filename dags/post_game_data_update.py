@@ -44,7 +44,7 @@ for id, series in SERIES.items():
     with DAG(
         dag_id=f"{id}_post_game_data_update_{series.lower()}",
         description=f"Updates game results and processes player statistics for {series} after a game ends.",
-        schedule_interval="@daily",
+        schedule_interval="0 9,21 * * *",
         start_date=datetime(1982, 4, 10),
         catchup=False,
         tags=["kbo", "baseball", "airflow", "python", "dbt", "elt", "post-game", series.lower()]
