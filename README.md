@@ -10,8 +10,8 @@ To run the pipeline locally using Docker Compose
 
 1. **Clone this repository and initialize submodules**
     ```bash
-    git clone --recurse-submodules https://github.com/leewr9/kbo-data-pipeline.git
-    cd kbo-data-pipeline
+    git clone --recurse-submodules https://github.com/kbo-data-portal/pipeline.git
+    cd pipeline
     ```
     Ensure that your GCP service account key is placed in the `config` folder and renamed to `key.json`
    
@@ -26,8 +26,8 @@ To run the pipeline locally using Docker Compose
 ## Submodules
 This project uses Git submodules to manage external components
 
-- [`kbo-data-collector`](https://github.com/leewr9/kbo-data-collector): Handles data collection logic.
-- [`kbo-data-portal`](https://github.com/leewr9/kbo-data-portal): Flask-based web application for data visualization.
+- [`collector`](https://github.com/kbo-data-portal/collector): Handles data collection logic.
+- [`api-server`](https://github.com/kbo-data-portal/api-server): Flask-based web application for data visualization.
 
 - To initialize submodules after cloning this repository
     ```bash
