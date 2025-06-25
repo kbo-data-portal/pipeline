@@ -2,7 +2,7 @@
 	path = collector
 	url = https://github.com/kbo-data-portal/collector.git
   	branch = master
-[submodule "portal"]
-	path = portal
+[submodule "api-server"]
+	path = api-server
 	url = https://github.com/kbo-data-portal/api-server.git
   	branch = master
