@@ -2,3 +2,6 @@
 	path = api-server
 	url = https://github.com/kbo-data-portal/api-server.git
   	branch = master
+[submodule "collector"]
+	path = collector
+	url = https://github.com/kbo-data-portal/collector.git
