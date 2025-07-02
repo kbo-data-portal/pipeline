@@ -28,9 +28,12 @@ FORMAT = "parquet"
 def run_scraping_and_saving(series, **kwargs):
     execution_date = kwargs['execution_date']
     season = execution_date.year
-    date = execution_date.strftime("%Y%m%d")
 
-    game.GameResultScraper(FORMAT, SERIES).run(season, date)
+    today_str  = execution_date.strftime("%Y%m%d")
+    tomorrow_str = execution_date.add(days=1).strftime("%Y%m%d")
+
+    game.GameResultScraper(FORMAT, series).run(season, today_str)
+    game.GameResultScraper(FORMAT, series).run(season, tomorrow_str)
     
     for pt in ["hitter", "pitcher", "fielder", "runner"]:
         player.PlayerSeasonStatsScraper(FORMAT, series, pt).run(season)
@@ -44,7 +47,7 @@ for id, series in SERIES.items():
     with DAG(
         dag_id=f"{id}_post_game_data_update_{series.lower()}",
         description=f"Updates game results and processes player statistics for {series} after a game ends.",
-        schedule_interval="0 9,21 * * *",
+        schedule_interval="@daily",
         start_date=datetime(1982, 4, 10),
         catchup=False,
         tags=["kbo", "baseball", "airflow", "python", "dbt", "elt", "post-game", series.lower()]
@@ -55,7 +58,7 @@ for id, series in SERIES.items():
         fetch_and_save_data = PythonOperator(
             task_id="fetch_and_save_data",
             python_callable=run_scraping_and_saving,
-            op_args=[id]
+            op_args=[[id]]
         )
 
         trigger_model_predictions = TriggerDagRunOperator(

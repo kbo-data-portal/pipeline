@@ -4,7 +4,7 @@ x-airflow-common:
   build:
     context: .
     dockerfile: Dockerfile
-  image: airflow:latest
+  #image: airflow:latest
   environment:
     &airflow-common-env
     AIRFLOW__CORE__EXECUTOR: CeleryExecutor
