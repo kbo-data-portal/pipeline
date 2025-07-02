@@ -27,10 +27,10 @@ FORMAT = "parquet"
 def run_scraping_and_saving(**kwargs):
     execution_date = kwargs['execution_date']
     year = execution_date.year
-    date = execution_date.strftime("%Y%m%d")
+    today_str = execution_date.strftime("%Y%m%d")
 
     series = list(SERIES.keys())
-    game.GameResultScraper(FORMAT, series).run(year, date)
+    game.GameResultScraper(FORMAT, series).run(year, today_str)
 
 
 with DAG(
