@@ -41,21 +41,8 @@ def _insert_to_db(file_list:list, table: str, schema: str = "public", season_id:
 
 def insert_prediction_data_to_db(**kwargs):
     """Insert game prediction data into the database."""
-    engine = _get_engine()
-    execution_date = kwargs['execution_date']
-    game_date = execution_date.strftime("%Y-%m-%d")
-
-    with engine.connect() as conn:
-        conn.execute("CREATE SCHEMA IF NOT EXISTS game;")
-        conn.execute(f'DELETE FROM game.prediction WHERE "G_DT" >= \'{game_date}\';')
-        
-        df = pd.read_parquet("output/prediction/match.parquet")
-        df["G_DT"] = pd.to_datetime(df["G_DT"])
-
-        filtered_df = df[df["G_DT"] >= game_date]
-        filtered_df.to_sql("prediction", engine, schema="game", if_exists="append", index=False)
-
-        print(f"Inserted data into game.prediction from matches since {game_date}")
+    predictions = glob.glob("output/prediction/*.parquet")
+    _insert_to_db(predictions, "prediction", "game")
 
 def insert_game_data_to_db(**kwargs):
     """Insert various game and player data into the database."""
