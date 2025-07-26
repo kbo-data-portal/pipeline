@@ -13,16 +13,63 @@ def load_game_data(table: str):
     df["HOME_WIN"] = (df["HOME_SCORE"] > df["AWAY_SCORE"]).astype(int)
 
     feature_template = [
-        "{team}_NM_LBL", "{team}_RANK", "{team}_REC_RATE", "{team}_REC_RAVG", "{team}_REC_ORAVG",
-        "{team}_PA", "{team}_AB", "{team}_R", "{team}_H", "{team}_2B", "{team}_3B", "{team}_HR", 
-        "{team}_RBI", "{team}_SB", "{team}_CS", "{team}_BB", "{team}_HBP", "{team}_SO", "{team}_GDP", 
-        "{team}_AVG", "{team}_TBF", "{team}_IP", "{team}_PH", "{team}_PHR", "{team}_PBB", "{team}_PHBP", 
-        "{team}_PSO", "{team}_PR", "{team}_ER", "{team}_ERA", "{team}_WHIP",
-        "{team}_REC_PA", "{team}_REC_AB", "{team}_REC_R", "{team}_REC_H", "{team}_REC_2B", "{team}_REC_3B", 
-        "{team}_REC_HR", "{team}_REC_RBI", "{team}_REC_SB", "{team}_REC_CS", "{team}_REC_BB", "{team}_REC_HBP", 
-        "{team}_REC_SO", "{team}_REC_GDP", "{team}_REC_AVG", "{team}_REC_TBF", "{team}_REC_IP", 
-        "{team}_REC_PH", "{team}_REC_PHR", "{team}_REC_PBB", "{team}_REC_PHBP", "{team}_REC_PSO", 
-        "{team}_REC_PR", "{team}_REC_ER", "{team}_REC_ERA", "{team}_REC_WHIP"
+        "{team}_NM_LBL",
+        "{team}_RANK",
+        "{team}_REC_RATE",
+        "{team}_REC_RAVG",
+        "{team}_REC_ORAVG",
+        "{team}_PA",
+        "{team}_AB",
+        "{team}_R",
+        "{team}_H",
+        "{team}_2B",
+        "{team}_3B",
+        "{team}_HR",
+        "{team}_RBI",
+        "{team}_SB",
+        "{team}_CS",
+        "{team}_BB",
+        "{team}_HBP",
+        "{team}_SO",
+        "{team}_GDP",
+        "{team}_AVG",
+        "{team}_TBF",
+        "{team}_IP",
+        "{team}_PH",
+        "{team}_PHR",
+        "{team}_PBB",
+        "{team}_PHBP",
+        "{team}_PSO",
+        "{team}_PR",
+        "{team}_ER",
+        "{team}_ERA",
+        "{team}_WHIP",
+        "{team}_REC_PA",
+        "{team}_REC_AB",
+        "{team}_REC_R",
+        "{team}_REC_H",
+        "{team}_REC_2B",
+        "{team}_REC_3B",
+        "{team}_REC_HR",
+        "{team}_REC_RBI",
+        "{team}_REC_SB",
+        "{team}_REC_CS",
+        "{team}_REC_BB",
+        "{team}_REC_HBP",
+        "{team}_REC_SO",
+        "{team}_REC_GDP",
+        "{team}_REC_AVG",
+        "{team}_REC_TBF",
+        "{team}_REC_IP",
+        "{team}_REC_PH",
+        "{team}_REC_PHR",
+        "{team}_REC_PBB",
+        "{team}_REC_PHBP",
+        "{team}_REC_PSO",
+        "{team}_REC_PR",
+        "{team}_REC_ER",
+        "{team}_REC_ERA",
+        "{team}_REC_WHIP",
     ]
 
     encoder = LabelEncoder()
@@ -32,9 +79,9 @@ def load_game_data(table: str):
     df["G_DT_NUM"] = pd.to_datetime(df["G_DT"]).map(lambda x: x.toordinal())
 
     feature_columns = (
-        ["SEASON_ID", "G_DT_NUM"] +
-        [col.format(team="HOME") for col in feature_template] +
-        [col.format(team="AWAY") for col in feature_template]
+        ["SEASON_ID", "G_DT_NUM"]
+        + [col.format(team="HOME") for col in feature_template]
+        + [col.format(team="AWAY") for col in feature_template]
     )
 
     X = df[feature_columns]
@@ -52,9 +99,12 @@ def plot_confusion_matrices(results_df: pd.DataFrame):
         if len(results_df) > 1:
             plt.subplot(2, 2, idx + 1)
         sns.heatmap(
-            cm, annot=True, fmt="d", cmap="Blues",
+            cm,
+            annot=True,
+            fmt="d",
+            cmap="Blues",
             xticklabels=["Predicted 0", "Predicted 1"],
-            yticklabels=["Actual 0", "Actual 1"]
+            yticklabels=["Actual 0", "Actual 1"],
         )
         plt.title(f"{row["name"]} - Confusion Matrix")
         plt.xlabel("Predicted")
@@ -91,7 +141,7 @@ def plot_model_metrics(results_df: pd.DataFrame):
         ("AUC", results_df["auc"], "lightgreen"),
         ("Precision", results_df["prec"], "lightcoral"),
         ("Recall", results_df["rec"], "lightyellow"),
-        ("F1 Score", results_df["f1"], "lightpink")
+        ("F1 Score", results_df["f1"], "lightpink"),
     ]
 
     for idx, (title, values, color) in enumerate(metric_data):
@@ -104,4 +154,3 @@ def plot_model_metrics(results_df: pd.DataFrame):
 
     plt.tight_layout()
     plt.show()
-

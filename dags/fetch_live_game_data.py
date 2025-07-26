@@ -19,13 +19,13 @@ SERIES = {
     5: "Playoffs",
     7: "Korean_Series",
     8: "International_Competitions",
-    9: "All_star_Game"
+    9: "All_star_Game",
 }
 FORMAT = "parquet"
 
 
 def run_scraping_and_saving(**kwargs):
-    execution_date = kwargs['execution_date']
+    execution_date = kwargs["execution_date"]
     year = execution_date.year
     today_str = execution_date.strftime("%Y%m%d")
 
@@ -39,14 +39,18 @@ with DAG(
     schedule_interval="0/5 * * * *",
     start_date=datetime(1982, 4, 10),
     catchup=False,
-    tags=["kbo", "baseball", "airflow", "python", "dbt", "elt", "real-time"]
+    tags=["kbo", "baseball", "airflow", "python", "dbt", "elt", "real-time"],
 ) as dag:
-    
+
     factory = KBOOperatorFactory(dag=dag)
-    
+
     fetch_and_save_data = PythonOperator(
-        task_id="fetch_and_save_data",
-        python_callable=run_scraping_and_saving
+        task_id="fetch_and_save_data", python_callable=run_scraping_and_saving
     )
 
-    fetch_and_save_data >> factory.upload_to_cloud_storage >> factory.insert_data_into_db >> factory.run_dbt_model
+    (
+        fetch_and_save_data
+        >> factory.upload_to_cloud_storage
+        >> factory.insert_data_into_db
+        >> factory.run_dbt_model
+    )

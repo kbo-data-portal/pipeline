@@ -20,21 +20,21 @@ SERIES = {
     5: "Playoffs",
     7: "Korean Series",
     8: "International Competitions",
-    9: "All-ytar Game"
+    9: "All-ytar Game",
 }
 FORMAT = "parquet"
 
 
 def run_scraping_and_saving(**kwargs):
-    execution_date = kwargs['execution_date']
+    execution_date = kwargs["execution_date"]
     year = execution_date.year
 
     series = list(SERIES.keys())
     game.GameResultScraper(FORMAT, series).run(year)
-    
+
     for pt in ["hitter", "pitcher", "fielder", "runner"]:
         player.PlayerSeasonStatsScraper(FORMAT, series, pt).run(year)
-        
+
     for pt in ["hitter", "pitcher"]:
         player.PlayerDetailStatsScraper(FORMAT, series, pt, "daily").run(year)
         player.PlayerDetailStatsScraper(FORMAT, series, pt, "situation").run(year)
@@ -46,14 +46,18 @@ with DAG(
     schedule_interval="@yearly",
     start_date=datetime(1982, 4, 10),
     catchup=True,
-    tags=["kbo", "baseball", "airflow", "python", "dbt", "elt", "season-start"]
+    tags=["kbo", "baseball", "airflow", "python", "dbt", "elt", "season-start"],
 ) as dag:
-    
+
     factory = KBOOperatorFactory(dag=dag)
-    
+
     fetch_and_save_data = PythonOperator(
-        task_id="fetch_and_save_data",
-        python_callable=run_scraping_and_saving
+        task_id="fetch_and_save_data", python_callable=run_scraping_and_saving
     )
 
-    fetch_and_save_data >> factory.upload_to_cloud_storage >> factory.insert_data_into_db >> factory.run_dbt_model
+    (
+        fetch_and_save_data
+        >> factory.upload_to_cloud_storage
+        >> factory.insert_data_into_db
+        >> factory.run_dbt_model
+    )
