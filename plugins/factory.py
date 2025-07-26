@@ -5,7 +5,7 @@ from airflow.operators.bash import BashOperator
 from airflow.operators.python import PythonOperator
 from airflow.models.connection import Connection
 
-DBT_PATH = '/home/airflow/.local/bin'
+DBT_PATH = "/home/airflow/.local/bin"
 ANALYTICS_DIR = "/opt/airflow/analytics"
 
 
@@ -14,15 +14,15 @@ class KBOOperatorFactory:
         self.insert_data_into_db = PythonOperator(
             task_id="insert_data_into_db",
             python_callable=insert_game_data_to_db,
-            dag=dag
+            dag=dag,
         )
 
         self.upload_to_cloud_storage = PythonOperator(
             task_id="upload_to_cloud_storage",
             python_callable=upload_data_to_cloud_storage,
-            dag=dag
+            dag=dag,
         )
-        
+
         connection = Connection.get_connection_from_secrets("postgres_default")
         self.run_dbt_model = BashOperator(
             task_id="run_dbt_model",
@@ -37,5 +37,5 @@ class KBOOperatorFactory:
                 cd {ANALYTICS_DIR} &&
                 {DBT_PATH}/dbt run --project-dir {ANALYTICS_DIR} --profiles-dir {ANALYTICS_DIR}
             """,
-            dag=dag
+            dag=dag,
         )

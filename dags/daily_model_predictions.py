@@ -23,7 +23,9 @@ RANDOM_STATE = 1982
 
 def train_model_pipeline(**kwargs):
     _, X, y = load_game_data("ml_game_dataset")
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=RANDOM_STATE)
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, test_size=0.2, random_state=RANDOM_STATE
+    )
 
     model_path = os.path.join("output", "model", "best_model.joblib")
     os.makedirs(os.path.dirname(model_path), exist_ok=True)
@@ -35,7 +37,7 @@ def train_model_pipeline(**kwargs):
 
     train_model, metrics = train_game_model(model, X_train, X_test, y_train, y_test)
 
-    metrics["name"] = 'best_model'
+    metrics["name"] = "best_model"
     joblib.dump(train_model, model_path)
 
 
@@ -53,7 +55,7 @@ def make_model_predictions(**kwargs):
     raw_df["HOME_WIN"] = predictions
     raw_df["HOME_WIN_PROB"] = proba[:, 1]
     raw_df["AWAY_WIN_PROB"] = proba[:, 0]
-    
+
     data_path = os.path.join("output", "prediction", "match.parquet")
     os.makedirs(os.path.dirname(data_path), exist_ok=True)
 
@@ -63,26 +65,33 @@ def make_model_predictions(**kwargs):
 with DAG(
     dag_id="daily_model_predictions",
     description="Trains the model and performs game predictions daily using the latest data.",
-    schedule_interval=None, # Trigger for post_game_data_update
+    schedule_interval=None,  # Trigger for post_game_data_update
     start_date=datetime(1982, 4, 10),
     catchup=False,
-    tags=["kbo", "baseball", "airflow", "python", "model", "training", "prediction", "daily"]
+    tags=[
+        "kbo",
+        "baseball",
+        "airflow",
+        "python",
+        "model",
+        "training",
+        "prediction",
+        "daily",
+    ],
 ) as dag:
-    
+
     execute_model_training = PythonOperator(
-        task_id="execute_model_training",
-        python_callable=train_model_pipeline
+        task_id="execute_model_training", python_callable=train_model_pipeline
     )
-    
+
     execute_model_prediction = PythonOperator(
-        task_id="execute_model_prediction",
-        python_callable=make_model_predictions
+        task_id="execute_model_prediction", python_callable=make_model_predictions
     )
 
     insert_data_into_db = PythonOperator(
         task_id="insert_prediction_data_to_db",
         python_callable=insert_prediction_data_to_db,
-        dag=dag
+        dag=dag,
     )
 
     execute_model_training >> execute_model_prediction >> insert_data_into_db

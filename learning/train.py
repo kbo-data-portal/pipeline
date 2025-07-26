@@ -1,8 +1,14 @@
 import pandas as pd
 from sklearn.base import ClassifierMixin
 from sklearn.metrics import (
-    confusion_matrix, roc_curve, auc,
-    precision_score, recall_score, f1_score, accuracy_score, roc_auc_score
+    confusion_matrix,
+    roc_curve,
+    auc,
+    precision_score,
+    recall_score,
+    f1_score,
+    accuracy_score,
+    roc_auc_score,
 )
 
 
@@ -11,7 +17,7 @@ def train_game_model(
     X_train: pd.DataFrame,
     X_test: pd.DataFrame,
     y_train: pd.Series,
-    y_test: pd.Series
+    y_test: pd.Series,
 ) -> tuple[ClassifierMixin, dict]:
     """Train a classification model on game data and evaluate performance."""
     train_model = model.fit(X_train, y_train)
@@ -29,8 +35,7 @@ def train_game_model(
         "rec": recall_score(y_test, y_pred),
         "f1": f1_score(y_test, y_pred),
         "cm": cm,
-        "roc": [fpr, tpr, roc_auc]
+        "roc": [fpr, tpr, roc_auc],
     }
 
     return train_model, metrics
-
