@@ -19,4 +19,3 @@ analytics:
       threads: 1
       type: postgres
   target: docker
-  
