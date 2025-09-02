@@ -141,6 +141,7 @@ services:
         mkdir -p /sources/logs /sources/dags /sources/plugins /sources/learning /sources/analytics /sources/collector /sources/output
         chown -R "${AIRFLOW_UID}:0" /sources/{logs,dags,plugins,learning,analytics,collector,output}
         exec /entrypoint airflow version
+        pip install -r /sources/collector/requirements.txt
     environment:
       <<: *airflow-common-env
       _AIRFLOW_DB_MIGRATE: "true"
