@@ -41,11 +41,11 @@ def run_scraping_and_saving(**kwargs):
 
 
 with DAG(
-    dag_id=f"initialize_season_data",
-    description=f"Initializes data for the upcoming season, including schedules, and player data.",
-    schedule_interval="@yearly",
+    dag_id=f"season_game_data_update",
+    description=f"Updates season data for the upcoming season, including schedules, and player data.",
+    schedule_interval="@weekly",
     start_date=datetime(1982, 4, 10),
-    catchup=True,
+    catchup=False,
     tags=["kbo", "baseball", "airflow", "python", "dbt", "elt", "season-start"],
 ) as dag:
 
